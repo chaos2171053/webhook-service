@@ -7,6 +7,8 @@
 - **MySQL**: A relational database management system.
 - **XState**: A library for creating, interpreting, and executing finite state machines and statecharts.
 - **Swagger**: A tool for documenting APIs, allowing for easy testing of endpoints.
+- **Redis**: An in-memory data structure store, used as a database, cache, and message broker.
+- **BullMQ**: A Redis-based queue system for handling distributed jobs and messages.
 
 ## Getting Started
 
