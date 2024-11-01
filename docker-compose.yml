@@ -12,6 +12,13 @@ services:
     networks:
       - webhook-service
 
+  redis:
+    image: redis:alpine
+    ports:
+      - '6379:6379'
+    networks:
+      - webhook-service
+
 volumes:
   db_data:
 networks:

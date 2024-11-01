@@ -96,9 +96,20 @@
      }
      ```
 
+   - **POST /webhooks/:id/trigger-with-queue**: Triggers a webhook using a message queue.
+
+   ```json
+   {
+     "userId": "123",
+     "message": "Hello, World!",
+     "searchTerm": "ok"
+   }
+   ```
+
 ## Project Directory Structure
 
 ```bash
+.
 .
 ├── Dockerfile
 ├── README.md
@@ -121,6 +132,7 @@
 │       ├── webhook.controller.ts
 │       ├── webhook.entity.ts
 │       ├── webhook.module.ts
+│       ├── webhook.processor.ts  // use message queue to handle request
 │       ├── webhook.service.ts
 │       └── webhook.state.ts
 ├── test

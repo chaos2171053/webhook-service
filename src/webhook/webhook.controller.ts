@@ -44,6 +44,12 @@ export class WebhookController {
     return this.webhookService.create(webhookData);
   }
 
+  // @Get('queue-status')
+  // @ApiOperation({ summary: 'queue-status' })
+  // async getQueueStatus() {
+  //   return this.webhookService.getQueueStatus();
+  // }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a webhook by ID' })
   @ApiResponse({
@@ -122,5 +128,20 @@ export class WebhookController {
     @Body() data: Record<string, any>,
   ): Promise<void> {
     return this.webhookService.trigger(id, data);
+  }
+
+  @Post(':id/trigger-with-queue')
+  @ApiOperation({ summary: 'Trigger a webhook using a message queue' })
+  @ApiParam({ name: 'id', description: 'ID of the webhook to trigger' })
+  @ApiBody({
+    description: 'Data to send with the webhook',
+    type: Object,
+  })
+  @HttpCode(200)
+  async triggerWithQueue(
+    @Param('id') id: number,
+    @Body() data: Record<string, any>,
+  ) {
+    return this.webhookService.triggerWithQueue(id, data);
   }
 }

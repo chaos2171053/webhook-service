@@ -6,12 +6,16 @@ import { webhookService, WebhookEvent } from './webhook.state';
 import axios from 'axios';
 import { UpdateWebhookDto } from './dtos/webhook.dto';
 import { UpdateStatusDto } from './dtos/updateStatus.dto';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class WebhookService {
   constructor(
     @InjectRepository(Webhook)
     private readonly webhookRepository: Repository<Webhook>,
+    @InjectQueue('webhookQueue') // Inject the BullMQ queue
+    private readonly queue: Queue, // The BullMQ queue
   ) {}
 
   async updateStatus(id: number, updateStatusDto: UpdateStatusDto) {
@@ -112,4 +116,37 @@ export class WebhookService {
       throw new Error(`Webhook with ID ${id} not found. Cannot delete.`);
     }
   }
+
+  async triggerWithQueue(id: number, data: Record<string, any>): Promise<void> {
+    const webhook = await this.webhookRepository.findOne({ where: { id } });
+
+    if (!webhook) {
+      throw new Error(`Webhook with ID ${id} not found.`);
+    }
+
+    if (webhook.status !== 'ENABLED') {
+      throw new Error(`Webhook with ID ${id} is not enabled.`);
+    }
+
+    console.log('Adding webhookQueue job to the queue');
+    await this.queue.add(
+      'webhookQueue',
+      { webhook, data },
+      {
+        removeOnComplete: true,
+        removeOnFail: true,
+      },
+    );
+    console.log('Job added to the queue successfully');
+  }
+  // async getQueueStatus() {
+  //   const jobs = await this.queue.getJobs([
+  //     'active',
+  //     'waiting',
+  //     // 'delayed',
+  //     // 'failed',
+  //     // 'paused',
+  //   ]);
+  //   return { jobs };
+  // }
 }
